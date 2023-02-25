@@ -32,6 +32,10 @@
 	 end_of_the_hour/1,
 	 end_of_the_minute/0,
 	 end_of_the_minute/1,
+	 seconds_since_midnight/0,
+	 seconds_since_midnight/1,
+	 seconds_until_end_of_day/0,
+	 seconds_until_end_of_day/1,
 	 dayname_of_the_week/0, 
 	 dayname_of_the_week/1
 	]).
@@ -120,6 +124,17 @@ start_of_the_minute(DateTime) ->
 start_of_the_minute() ->
 	start_of_the_minute(clendar:local_time()).
 
+seconds_since_midnight(DateTime) ->
+	{Date, _} = DateTime,
+	calendar:datetime_to_gregorian_seconds(DateTime) - calendar:datetime_to_gregorian_seconds({Date, {0,0,0}}).
+seconds_since_midnight() ->
+	seconds_since_midnight(calendar:local_time()).
+
+seconds_until_end_of_day(DateTime) ->
+	{Date, _} = DateTime,
+	calendar:datetime_to_gregorian_seconds({Date, {23,59,59}}) + 1 - calendar:datetime_to_gregorian_seconds(DateTime).
+seconds_until_end_of_day() ->
+	seconds_until_end_of_day(calendar:local_time()).
 
 add(year, Years, DateTime) ->
 	{{Year, Month, Day}, Time} = DateTime,

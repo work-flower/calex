@@ -28,6 +28,10 @@
          end_of_the_hour/1,
          end_of_the_minute/0,
          end_of_the_minute/1,
+	 seconds_since_midnight/0,
+ 	 seconds_since_midnight/1,
+	 seconds_until_end_of_day/0,
+	 seconds_until_end_of_day/1,
 	 dayname_of_the_week/0,
          dayname_of_the_week/1
        ]
@@ -53,7 +57,9 @@ test_individual(DateTime) ->
 	eval(start_of_the_week(DateTime), {{2023, 02, 19}, {0,0,0}}, start_of_the_week),
 	eval(start_of_the_day(DateTime), {Date, {0,0,0}}, start_of_the_day),
 	eval(start_of_the_hour(DateTime), {Date, {Hour,0, 0}}, start_of_the_hour),
-	eval(start_of_the_minute(DateTime), {Date, {Hour, Minute,0}}, start_of_the_minute).
+	eval(start_of_the_minute(DateTime), {Date, {Hour, Minute,0}}, start_of_the_minute),
+	eval(seconds_since_midnight(DateTime), 66661, seconds_since_midnight),
+	eval(seconds_until_end_of_day(DateTime), 19739, seconds_until_end_of_day).
 
 eval(LeftPredicate, RightPredicate, FunctionName) ->
 	eval(LeftPredicate =:= RightPredicate),

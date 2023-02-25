@@ -1,2 +1,2 @@
-# erlang-calendar-extensions
+# calex
 Contains extensions for calendar library in erlang

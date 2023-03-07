@@ -14,6 +14,12 @@
 	 next_year/1,
 	 last_year/0,
 	 last_year/1,
+	 next_month/0,
+	 next_month/1,
+	 last_month/0,
+	 last_month/1,
+	 start_of_the_month/0,
+	 start_of_the_month/1,
 	 start_of_the_week/0,
 	 start_of_the_week/1,
 	 start_of_the_day/0,
@@ -24,6 +30,8 @@
 	 start_of_the_minute/1,
 	 middle_of_the_day/0,
 	 middle_of_the_day/1,
+	 end_of_the_month/0,
+	 end_of_the_month/1,
 	 end_of_the_week/0,
 	 end_of_the_week/1,
 	 end_of_the_day/0,
@@ -64,6 +72,23 @@ last_year(DateTime) ->
 last_year() ->
 	last_year(calendar:local_time()).
 
+next_month(DateTime) ->
+	add(month, 1, DateTime).
+next_month() ->
+	next_month(calendar:local_time()).
+
+last_month(DateTime) ->
+	add(month, -1, DateTime).
+last_month() ->
+	last_month(calendar:local_time()).
+
+end_of_the_month(DateTime) ->
+	{{NextMonthsYear, NextMonthsMonth, _}, _} = next_month(DateTime),
+	LastDayOfThisMonth = add(day, -1, {{NextMonthsYear, NextMonthsMonth, 1}, {23, 59, 59} }),
+	LastDayOfThisMonth.
+end_of_the_month() ->
+	end_of_the_month(calendar:local_time()).
+
 end_of_the_week(DateTime) ->
 	{Date, _} = DateTime,
 	DaysToEndOfTheWeek = 7-calendar:day_of_the_week(Date),
@@ -96,6 +121,12 @@ middle_of_the_day(DateTime) ->
 	{Date, {12, 0, 0}}.
 middle_of_the_day() ->
 	middle_of_the_day(calendar:local_time()).
+
+start_of_the_month(DateTime) ->
+	{{Year, Month, _}, _} = DateTime,
+	{{Year, Month, 1}, {0,0,0}}.
+start_of_the_month() ->
+	start_of_the_month(calendar:local_time()).
 
 start_of_the_week(DateTime) ->
 	{Date, _} = DateTime,
@@ -140,7 +171,19 @@ add(year, Years, DateTime) ->
 	{{Year, Month, Day}, Time} = DateTime,
 	{{Year+Years, Month, Day}, Time};
 add(month, Months, DateTime) ->
-	not_yet_implemented;
+	{{Year, Month, Day}, Time} = DateTime,
+	{AdditionalYearCountByGivenMonths, RemainderMonthCountByGivenMonths} = 
+										{
+										 Months div 12, 
+										 Months rem 12
+										},
+	CandidateMonthValue = Month + RemainderMonthCountByGivenMonths,
+	{ExtraYearAfterMonthAddition, MonthValue} = 
+								{ 
+								 	CandidateMonthValue div 12, 
+									CandidateMonthValue rem 12
+								},
+	{{Year + AdditionalYearCountByGivenMonths + ExtraYearAfterMonthAddition, MonthValue, Day}, Time}; 
 add(day, Days, DateTime) ->
 	DaysAsMilliseconds = Days * 24 * 60 * 60 * 1000,
 	add(milliseconds, DaysAsMilliseconds, DateTime);
@@ -180,3 +223,48 @@ dayname_of_the_week(DayNumber, [_ | T]) ->
         dayname_of_the_week(DayNumber, T);
 dayname_of_the_week(DayNumber, []) ->
 	{error, {DayNumber, none}}.
+
+%%	RUBY INSPIRED DATE TIME FORMAT STRINGS
+%%
+%%	--- CONVERSION SPECIFIERS ---
+%% %Y - Year including century, zero-padded: 2022
+%% %y - Year without century, in range (0.99), zero-padded: 22
+%% %C - Century, zero-padded: 20 
+%% %m - Month of the year, in range (1..12), zero-padded: 01
+%% %B - Full month name, capitalized: January
+%% %b - Abbreviated month name, capitalized: Jan
+%% %h - Same as %b.
+%% %d - Day of the month, in range (1..31), zero-padded: 01
+%% %e - Day of the month, in range (1..31), blank-padded: " 1"
+%% %j - Day of the year, in range (1..366), zero-padded: 125
+%% %H - Hour of the day, in range (0..23), zero-padded: 12
+%% %k - Hour of the day, in range (0..23), blank-padded: " 1"
+%% %I - Hour of the day, in range (1..12), zero-padded: 08
+%% %l - Hour of the day, in range (1..12), blank-padded: " 8"
+%% %P - Meridian indicator, lowercase: am, pm
+%% %p - Meridian indicator, uppercase: AM, PM
+%% %M - Minute of the hour, in range (0..59), zero-padded: 57
+%% %S - Second of the minute in range (0..59), zero-padded: 18
+%% %s - Number of seconds since the epoch: 1656505136
+%% %A - Full weekday name: Wednesday
+%% %a - Abbreviated weekday name: Wed
+%% %u - Day of the week, in range (1..7), Monday is 1: 2
+%% %w - Day of the week, in range (0..6), Sunday is 0: 0
+%% %U - Week number of the year, in range (0..53), zero-padded, where each week begins on a Sunday: 27
+%% %W - Week number of the year, in range (0..53), zero-padded, where each week begins on a Monday: 26
+%%
+%% 	--- SHORTHAND CONVERSION SPECIFIERS ---
+%% %c - Date and time: "Wed Jun 29 08:01:41 2022", shorthand for '%a %b %e %T %Y'
+%% %D - Date: "06/29/22", shorthand for '%m/%d/%y'
+%% %F - ISO 8601 date: "2022-06-29", shorthand for '%Y-%m-%d'
+%% %v - VMS date: "29-JUN-2022", shorthand for '%e-%^b-%Y'
+%% %x - Same as %D
+%% %X - Same as %T
+%% %r - 12-hour time:  "01:00:00 AM", shorthand for '%I:%M:%S %p'
+%% %R - 24-hour time: "01:00", shorthand for '%H:%M'
+%% %T - 24-hour time: "01:00:00", shorthand for '%H:%M:%S'
+%% %+ - Date and time: "Wed Jun 29 08:31:53 -05:00 2022", shorthand for '%a %b %e %H:%M:%S %Z %Y'
+%%
+%%
+
+

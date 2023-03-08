@@ -1,4 +1,4 @@
 # calex
-Contains extensions for calendar library in erlang
+Contains Ruby inspired extensions for calendar library in erlang
 
 NOTE: Still Under Development

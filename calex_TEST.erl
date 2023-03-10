@@ -41,7 +41,9 @@
 	 seconds_until_end_of_day/0,
 	 seconds_until_end_of_day/1,
 	 dayname_of_the_week/0,
-         dayname_of_the_week/1
+         dayname_of_the_week/1,
+	 month_name/0,
+	 month_name/1
        ]
        ).
 
@@ -75,14 +77,43 @@ test_individual(DateTime, All) ->
 	eval(start_of_the_hour(DateTime), {Date, {Hour,0, 0}}, start_of_the_hour) ++
 	eval(start_of_the_minute(DateTime), {Date, {Hour, Minute,0}}, start_of_the_minute) ++
 	eval(seconds_since_midnight(DateTime), 66661, seconds_since_midnight) ++
-	eval(seconds_until_end_of_day(DateTime), 19739, seconds_until_end_of_day),
-	
-	Results = [{if T -> pass; true -> 'FAIL' end, G} || {T, G} <- TestResults, T =:= All],
+	eval(seconds_until_end_of_day(DateTime), 19739, seconds_until_end_of_day)++
+	eval(dayname_of_the_week(DateTime), {4, 'Thursday'}, 'dayname_of_the_week by datetime')++
+	eval(dayname_of_the_week(1), {1, 'Monday'}, 'dayname_of_the_week')++
+	eval(dayname_of_the_week(2), {2, 'Tuesday'}, 'dayname_of_the_week')++
+	eval(dayname_of_the_week(3), {3, 'Wednesday'}, 'dayname_of_the_week')++
+	eval(dayname_of_the_week(4), {4, 'Thursday'}, 'dayname_of_the_week')++
+	eval(dayname_of_the_week(5), {5, 'Friday'}, 'dayname_of_the_week')++
+	eval(dayname_of_the_week(6), {6, 'Saturday'}, 'dayname_of_the_week')++
+	eval(dayname_of_the_week(7), {7, 'Sunday'}, 'dayname_of_the_week') ++
+	eval(month_name(DateTime), {2, 'February'}, 'month_name by datetime')++
+	eval(month_name(1), {1, 'January'}, month_name)++
+	eval(month_name(2), {2, 'February'}, month_name)++
+	eval(month_name(3), {3, 'March'}, month_name)++
+	eval(month_name(4), {4, 'April'}, month_name)++
+	eval(month_name(5), {5, 'May'}, month_name)++
+	eval(month_name(6), {6, 'June'}, month_name)++
+	eval(month_name(7), {7, 'July'}, month_name)++
+	eval(month_name(8), {8, 'August'}, month_name)++
+	eval(month_name(9), {9, 'September'}, month_name)++
+	eval(month_name(10), {10, 'October'}, month_name)++
+	eval(month_name(11), {11, 'November'}, month_name)++
+	eval(month_name(12), {12, 'December'}, month_name)++
+	eval(month_name(13), {13, 'not_found'}, month_name)
+,
+
+	if All =:= true ->	
+		Results = [{if T -> pass; true -> 'FAIL' end, G} || {T, G} <- TestResults];
+	 true ->
+		Results = [{if T -> pass; true -> 'FAIL' end, G} || {T, G} <- TestResults, T =:= false]
+	end,
+
 	if 
 		All =:= true ->
-		   Results;
+		   io:format("~p~n", [Results]),
+		   "All tests passed. Use calex_TEST:test(all) for complete result";
 		length(Results) /= 0 ->
-		   Results;
+		   io:format("~p~n", [Results]);
 		true ->
 		   "All tests passed. Use calex_TEST:test(all) for complete result"
 	end.

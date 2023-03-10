@@ -45,125 +45,185 @@
 	 seconds_until_end_of_day/0,
 	 seconds_until_end_of_day/1,
 	 dayname_of_the_week/0, 
-	 dayname_of_the_week/1
+	 dayname_of_the_week/1,
+	 month_name/0,
+	 month_name/1
 	]).
 
+-define(MONTH_NAMES, [{1, 'January'}, {2, 'February'}, {3, 'March'}, {4, 'April'}, {5, 'May'}, {6, 'June'}, {7, 'July'}, {8, 'August'}, {9, 'September'}, {10, 'October'}, {11, 'November'}, {12, 'December'} ]).
+-define(DAY_NAMES, [{1, 'Monday'}, {2, 'Tuesday'}, {3, 'Wednesday'}, {4, 'Thursday'}, {5, 'Friday'}, {6, 'Saturday'}, {7, 'Sunday'}]).
+
+
+-spec tomorrow(calendar:datetime()) -> calendar:datetime().
 tomorrow(DateTime) ->
 	{Tomorrow, _} = add(day, 1, DateTime),
 	Tomorrow.
-
+-spec tomorrow() -> calendar:datetime().
 tomorrow() ->
 	tomorrow(add(day, 1, calendar:local_time())).
 
-
+-spec yesterday(calendar:datetime()) -> calendar:datetime(). 
 yesterday(DateTime) ->
 	{Yesterday, _} = add(day, -1, DateTime),
 	Yesterday.
+
+-spec yesterday() -> calendar:datetime().
 yesterday() ->
 	yesterday(calendar:local_time()).
 
+-spec next_year(calendar:datetime()) -> calendar:datetime().
 next_year(DateTime) ->
 	add(year, 1, DateTime).
+
+-spec next_year() -> calendar:datetime().
 next_year() ->
 	next_year(calendar:local_time()).
 
+-spec last_year(calendar:datetime()) -> calendar:datetime().
 last_year(DateTime) ->
 	add(year, -1, DateTime).
+
+-spec last_year() -> calendar:datetime().
 last_year() ->
 	last_year(calendar:local_time()).
 
+-spec next_month(calendar:datetime()) -> calendar:datetime().
 next_month(DateTime) ->
 	add(month, 1, DateTime).
+
+-spec next_month() -> calendar:datetime().
 next_month() ->
 	next_month(calendar:local_time()).
 
+-spec last_month(calendar:datetime()) -> calendar:datetime().
 last_month(DateTime) ->
 	add(month, -1, DateTime).
+
+-spec last_month() -> calendar:datetime().
 last_month() ->
 	last_month(calendar:local_time()).
 
+-spec end_of_the_month(calendar:datetime()) -> calendar:datetime().
 end_of_the_month(DateTime) ->
 	{{NextMonthsYear, NextMonthsMonth, _}, _} = next_month(DateTime),
 	LastDayOfThisMonth = add(day, -1, {{NextMonthsYear, NextMonthsMonth, 1}, {23, 59, 59} }),
 	LastDayOfThisMonth.
+
+-spec end_of_the_month() -> calendar:datetime().
 end_of_the_month() ->
 	end_of_the_month(calendar:local_time()).
 
+-spec end_of_the_week(calendar:datetime()) -> calendar:datetime().
 end_of_the_week(DateTime) ->
 	{Date, _} = DateTime,
 	DaysToEndOfTheWeek = 7-calendar:day_of_the_week(Date),
 	add(day, DaysToEndOfTheWeek, {Date, {23,59,59}}).
+
+-spec end_of_the_week() -> calendar:datetime().
 end_of_the_week() ->
 	end_of_the_week(calendar:local_time()).
 
+-spec end_of_the_day(calendar:datetime()) -> calendar:datetime().
 end_of_the_day(DateTime) ->
 	{Date, _} = DateTime,
 	{Date, {23, 59, 59}}.
+
+-spec end_of_the_day() -> calendar:datetime().
 end_of_the_day() ->
 	end_of_the_day(calendar:local_time()).
 
+-spec end_of_the_hour(calendar:datetime()) -> calendar:datetime().
 end_of_the_hour(DateTime) ->
 	{Date, Time} = DateTime,
 	{Hour, _, _} = Time,
 	{Date, {Hour, 59, 59}}.
+
+-spec end_of_the_hour() -> calendar:datetime().
 end_of_the_hour() ->
 	end_of_the_hour(calendar:local_time()).
 
+-spec end_of_the_minute(calendar:datetime()) -> calendar:datetime().
 end_of_the_minute(DateTime) ->
 	{Date, Time} = DateTime,
 	{Hour, Minute, _} = Time,
 	{Date, {Hour, Minute, 59}}.
+
+-spec end_of_the_minute() -> calendar:datetime().
 end_of_the_minute() ->
 	end_of_the_minute(calendar:local_time()).
 
+-spec middle_of_the_day(calendar:datetime()) -> calendar:datetime().
 middle_of_the_day(DateTime) ->
 	{Date, _} = DateTime,
 	{Date, {12, 0, 0}}.
+
+-spec middle_of_the_day() -> calendar:datetime().
 middle_of_the_day() ->
 	middle_of_the_day(calendar:local_time()).
 
+-spec start_of_the_month(calendar:datetime()) -> calendar:datetime().
 start_of_the_month(DateTime) ->
 	{{Year, Month, _}, _} = DateTime,
 	{{Year, Month, 1}, {0,0,0}}.
+
+-spec start_of_the_month() -> calendar:datetime().
 start_of_the_month() ->
 	start_of_the_month(calendar:local_time()).
 
+-spec start_of_the_week(calendar:datetime()) -> calendar:datetime().
 start_of_the_week(DateTime) ->
 	{Date, _} = DateTime,
 	DaysToStartOfTheWeek = -day_of_the_week(Date),
 	add(day, DaysToStartOfTheWeek, {Date, {0,0,0}}).
+
+-spec start_of_the_week() -> calendar:datetime().
 start_of_the_week() ->
 	start_of_the_week(calendar:local_time()).
 
+-spec start_of_the_day(calendar:datetime()) -> calendar:datetime().
 start_of_the_day(DateTime) ->
 	{Date, _} = DateTime,
 	{Date, {0,0,0}}.
+
+-spec start_of_the_day() -> calendar:datetime().
 start_of_the_day() ->
 	start_of_the_day(calendar:local_time()).
 
+-spec start_of_the_hour(calendar:datetime()) -> calendar:datetime().
 start_of_the_hour(DateTime) ->
 	{Date, Time} = DateTime,
 	{Hour, _, _} = Time,
 	{Date, {Hour, 0, 0}}.
+
+-spec start_of_the_hour() -> calendar:datetime().
 start_of_the_hour() ->
 	start_of_the_hour(calendar:local_time()).
 
+-spec start_of_the_minute(calendar:datetime()) -> calendar:datetime().
 start_of_the_minute(DateTime) ->
 	{Date, Time} = DateTime,
 	{Hour, Minute, _} = Time,
 	{Date, {Hour, Minute, 0}}.
+
+-spec start_of_the_minute() -> calendar:datetime().
 start_of_the_minute() ->
 	start_of_the_minute(clendar:local_time()).
 
+-spec  seconds_since_midnight(calendar:datetime()) -> integer().
 seconds_since_midnight(DateTime) ->
 	{Date, _} = DateTime,
 	calendar:datetime_to_gregorian_seconds(DateTime) - calendar:datetime_to_gregorian_seconds({Date, {0,0,0}}).
+
+-spec  seconds_since_midnight() -> integer().
 seconds_since_midnight() ->
 	seconds_since_midnight(calendar:local_time()).
 
+-spec  seconds_until_end_of_day(calendar:datetime()) -> integer().
 seconds_until_end_of_day(DateTime) ->
 	{Date, _} = DateTime,
 	calendar:datetime_to_gregorian_seconds({Date, {23,59,59}}) + 1 - calendar:datetime_to_gregorian_seconds(DateTime).
+
+-spec  seconds_until_end_of_day() -> integer().
 seconds_until_end_of_day() ->
 	seconds_until_end_of_day(calendar:local_time()).
 
@@ -201,28 +261,44 @@ add(milliseconds, Milliseconds, DateTime) ->
 	AddedTotalSeconds = TotalSeconds + trunc(Milliseconds/1000),
 	calendar:gregorian_seconds_to_datetime(AddedTotalSeconds).
 
+-spec month_name() -> {integer, _}.
+month_name() ->
+	month_name(calendar:local_time()).
+
+
+-spec month_name(integer() | calendar:datetime()) -> {integer(), _}.
+month_name(MonthNumber) when is_integer(MonthNumber) ->
+	month_name(MonthNumber, ?MONTH_NAMES);
+month_name(DateTime) ->
+	{{_, MonthNumber, _}, {_,_,_}} = DateTime,
+	month_name(MonthNumber).
+
+month_name(MonthNumber, [{MonthNumber, MonthName} | _]) ->
+	{MonthNumber, MonthName};
+month_name(MonthNumber, [_ | T]) ->
+	month_name(MonthNumber, T);
+month_name(MonthNumber, []) ->
+	{MonthNumber, not_found}.
+
+-spec dayname_of_the_week() -> {integer(), _}.
 dayname_of_the_week() ->
-	{Date, _} = calendar:local_time(),
+	dayname_of_the_week(calendar:local_time()).
+
+-spec dayname_of_the_week(integer() | calendar:datetime()) -> {integer, _}.
+dayname_of_the_week(DayNumber) when is_integer(DayNumber) ->
+        dayname_of_the_week(DayNumber, ?DAY_NAMES);
+dayname_of_the_week(DateTime) ->
+	{Date, _} = DateTime,
 	DayNumber = calendar:day_of_the_week(Date),
         dayname_of_the_week(DayNumber).
-
-dayname_of_the_week(DayNumber) when is_integer(DayNumber) ->
-        DayNames = [
-                    {1, monday},
-                    {2, tuesday},
-                    {3, wednesday},
-                    {4, thursday},
-                    {5, friday},
-                    {6, saturday},
-                    {7, sunday}],
-        dayname_of_the_week(DayNumber, DayNames).
+	
 
 dayname_of_the_week(DayNumber, [{DayNumber, DayName} | _]) ->
-        {ok, {DayNumber, DayName}};
+        {DayNumber, DayName};
 dayname_of_the_week(DayNumber, [_ | T]) ->
         dayname_of_the_week(DayNumber, T);
 dayname_of_the_week(DayNumber, []) ->
-	{error, {DayNumber, none}}.
+	{DayNumber, not_found}.
 
 %%	RUBY INSPIRED DATE TIME FORMAT STRINGS
 %%

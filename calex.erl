@@ -5,6 +5,7 @@
 		   date_time_to_gregorian_seconds/1,
 		   gregorian_seconds_to_date_time/1
 		  ]).
+-include("calex.hrl").
 -export([
 	 tomorrow/0,
 	 tomorrow/1,
@@ -47,12 +48,12 @@
 	 dayname_of_the_week/0, 
 	 dayname_of_the_week/1,
 	 month_name/0,
-	 month_name/1
+	 month_name/1,
+	 month_name/2,
+	 month_sname/0,
+	 month_sname/1,
+	 month_sname/2
 	]).
-
--define(MONTH_NAMES, [{1, 'January'}, {2, 'February'}, {3, 'March'}, {4, 'April'}, {5, 'May'}, {6, 'June'}, {7, 'July'}, {8, 'August'}, {9, 'September'}, {10, 'October'}, {11, 'November'}, {12, 'December'} ]).
--define(DAY_NAMES, [{1, 'Monday'}, {2, 'Tuesday'}, {3, 'Wednesday'}, {4, 'Thursday'}, {5, 'Friday'}, {6, 'Saturday'}, {7, 'Sunday'}]).
-
 
 -spec tomorrow(calendar:datetime()) -> calendar:datetime().
 tomorrow(DateTime) ->
@@ -261,24 +262,55 @@ add(milliseconds, Milliseconds, DateTime) ->
 	AddedTotalSeconds = TotalSeconds + trunc(Milliseconds/1000),
 	calendar:gregorian_seconds_to_datetime(AddedTotalSeconds).
 
--spec month_name() -> {integer, _}.
+-spec month_sname() -> {integer(), atom(), string()}.
+month_sname() ->
+	month_sname(calendar:local_time()).
+
+-spec month_sname(integer() | calendar:datetime()) -> {integer(), atom(), string()}.
+month_sname(MonthNumber) when is_integer(MonthNumber) ->
+	[{_, MonthNamesOfLang}] = [{L, M} || {L, M}<- ?MONTH_NAMES, L =:= en],
+	{Number, _, _, ShortMonthNameAtom, ShortMonthNameString} = month_name(MonthNumber, MonthNamesOfLang),
+	{Number, ShortMonthNameAtom, ShortMonthNameString};
+month_sname(DateTime) ->
+	{{_, MonthNumber, _}, _} = DateTime,
+	month_sname(MonthNumber).
+
+-spec month_sname(integer() | calendar:datetime(), atom()) -> {integer(), atom(), string()}.
+month_sname(MonthNumber, LangCode) when is_integer(MonthNumber), is_atom(LangCode) ->
+	[{_, MonthNamesOfLang}] = [{L, M} || {L, M} <- ?MONTH_NAMES, L =:= LangCode],
+	{Number, _, _, ShortMonthNameAtom, ShortMonthNameString} = month_name(MonthNumber, MonthNamesOfLang),
+	{Number, ShortMonthNameAtom, ShortMonthNameString};
+month_sname(DateTime, LangCode) when is_atom(LangCode) ->
+	{{_, MonthNumber, _}, _} = DateTime,
+	month_sname(MonthNumber, LangCode).
+
+-spec month_name() -> {integer(), atom(), string()}.
 month_name() ->
 	month_name(calendar:local_time()).
 
-
--spec month_name(integer() | calendar:datetime()) -> {integer(), _}.
+-spec month_name(integer() | calendar:datetime()) -> {integer(), atom(), string()}.
 month_name(MonthNumber) when is_integer(MonthNumber) ->
-	month_name(MonthNumber, ?MONTH_NAMES);
+	[{_, MonthNamesOfLang}] = [{L, M} || {L, M}<- ?MONTH_NAMES, L =:= en],
+	{Number, MonthNameAtom, MonthNameString, _, _} = month_name(MonthNumber, MonthNamesOfLang),
+	{Number, MonthNameAtom, MonthNameString};
 month_name(DateTime) ->
-	{{_, MonthNumber, _}, {_,_,_}} = DateTime,
+	{{_, MonthNumber, _}, _} = DateTime,
 	month_name(MonthNumber).
 
-month_name(MonthNumber, [{MonthNumber, MonthName} | _]) ->
-	{MonthNumber, MonthName};
+-spec month_name(integer() | calendar:datetime(), atom()) -> {integer(), atom(), string()}.
+month_name(MonthNumber, LangCode) when is_integer(MonthNumber), is_atom(LangCode) ->
+	[{_, MonthNamesOfLang}] = [{L, M} || {L, M} <- ?MONTH_NAMES, L =:= LangCode],
+	{Number, LongNameAtom, LongNameString, _, _} = month_name(MonthNumber, MonthNamesOfLang),
+	{Number, LongNameAtom, LongNameString};
+month_name(DateTime, LangCode) when is_atom(LangCode) ->
+	{{_, MonthNumber, _}, _} = DateTime,
+	month_name(MonthNumber, LangCode);
+month_name(MonthNumber, [{MonthNumber, MonthNameAtom, MonthNameString, SMonthNameAtom, SMonthNameString} | _]) ->
+	{MonthNumber, MonthNameAtom, MonthNameString, SMonthNameAtom, SMonthNameString};
 month_name(MonthNumber, [_ | T]) ->
 	month_name(MonthNumber, T);
 month_name(MonthNumber, []) ->
-	{MonthNumber, not_found}.
+	{MonthNumber, not_found, "not_found", not_found, "not_found"}.
 
 -spec dayname_of_the_week() -> {integer(), _}.
 dayname_of_the_week() ->

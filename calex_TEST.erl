@@ -1,7 +1,8 @@
 -module(calex_TEST).
 -export([test/0, test/1]).
 -import(calex,
-       [	
+       [
+	total_seconds/1,
 	tomorrow/0,
          tomorrow/1,
          yesterday/0,
@@ -42,6 +43,7 @@
 	 seconds_until_end_of_day/1,
 	 dayname_of_the_week/0,
          dayname_of_the_week/1,
+         dayname_of_the_week/2,
 	 month_name/0,
 	 month_name/1,
 	 month_name/2,
@@ -82,98 +84,75 @@ test_individual(DateTime, All) ->
 	assertEqual(start_of_the_minute(DateTime), {Date, {Hour, Minute,0}}, start_of_the_minute) ++
 	assertEqual(seconds_since_midnight(DateTime), 66661, seconds_since_midnight) ++
 	assertEqual(seconds_until_end_of_day(DateTime), 19739, seconds_until_end_of_day)++
-	assertEqual(dayname_of_the_week(DateTime), {4, 'Thursday'}, 'dayname_of_the_week by datetime')++
-	assertEqual(dayname_of_the_week(1), {1, 'Monday'}, 'dayname_of_the_week')++
-	assertEqual(dayname_of_the_week(2), {2, 'Tuesday'}, 'dayname_of_the_week')++
-	assertEqual(dayname_of_the_week(3), {3, 'Wednesday'}, 'dayname_of_the_week')++
-	assertEqual(dayname_of_the_week(4), {4, 'Thursday'}, 'dayname_of_the_week')++
-	assertEqual(dayname_of_the_week(5), {5, 'Friday'}, 'dayname_of_the_week')++
-	assertEqual(dayname_of_the_week(6), {6, 'Saturday'}, 'dayname_of_the_week')++
-	assertEqual(dayname_of_the_week(7), {7, 'Sunday'}, 'dayname_of_the_week') ++
-	assertEqual(month_name(DateTime), {2, 'February', "February"}, 'month_name by datetime')++
-	assertEqual(month_name(1), {1, 'January', "January"}, month_name)++
-	assertEqual(month_name(2), {2, 'February', "February"}, month_name)++
-	assertEqual(month_name(3), {3, 'March', "March"}, month_name)++
-	assertEqual(month_name(4), {4, 'April', "April"}, month_name)++
-	assertEqual(month_name(5), {5, 'May', "May"}, month_name)++
-	assertEqual(month_name(6), {6, 'June', "June"}, month_name)++
-	assertEqual(month_name(7), {7, 'July', "July"}, month_name)++
-	assertEqual(month_name(8), {8, 'August', "August"}, month_name)++
-	assertEqual(month_name(9), {9, 'September', "September"}, month_name)++
-	assertEqual(month_name(10), {10, 'October', "October"}, month_sname)++
-	assertEqual(month_name(11), {11, 'November', "November"}, month_sname)++
-	assertEqual(month_name(12), {12, 'December', "December"}, month_sname)++
-	assertEqual(month_name(13), {13, 'not_found', "not_found"}, month_sname)++
-	assertEqual(month_name(DateTime, en), {2, 'February', "February"}, 'month_name by datetime')++
-	assertEqual(month_name(1, en), {1, 'January', "January"}, month_name)++
-	assertEqual(month_name(2, en), {2, 'February', "February"}, month_name)++
-	assertEqual(month_name(3, en), {3, 'March', "March"}, month_name)++
-	assertEqual(month_name(4, en), {4, 'April', "April"}, month_name)++
-	assertEqual(month_name(5, en), {5, 'May', "May"}, month_name)++
-	assertEqual(month_name(6, en), {6, 'June', "June"}, month_name)++
-	assertEqual(month_name(7, en), {7, 'July', "July"}, month_name)++
-	assertEqual(month_name(8, en), {8, 'August', "August"}, month_name)++
-	assertEqual(month_name(9, en), {9, 'September', "September"}, month_name)++
-	assertEqual(month_name(10, en), {10, 'October', "October"}, month_sname)++
-	assertEqual(month_name(11, en), {11, 'November', "November"}, month_sname)++
-	assertEqual(month_name(12, en), {12, 'December', "December"}, month_sname)++
-	assertEqual(month_name(13, en), {13, 'not_found', "not_found"}, month_sname)++
-	assertEqual(month_name(DateTime, tr), {2, 'Subat', "Subat"}, 'month_name by datetime')++
-	assertEqual(month_name(1, tr), {1, 'Ocak', "Ocak"}, month_name)++
-	assertEqual(month_name(2, tr), {2, 'Subat', "Subat"}, month_name)++
-	assertEqual(month_name(3, tr), {3, 'Mart', "Mart"}, month_name)++
-	assertEqual(month_name(4, tr), {4, 'Nisan', "Nisan"}, month_name)++
-	assertEqual(month_name(5, tr), {5, 'Mayis', "Mayis"}, month_name)++
-	assertEqual(month_name(6, tr), {6, 'Haziran', "Haziran"}, month_name)++
-	assertEqual(month_name(7, tr), {7, 'Temmuz', "Temmuz"}, month_name)++
-	assertEqual(month_name(8, tr), {8, 'Agustos', "Agustos"}, month_name)++
-	assertEqual(month_name(9, tr), {9, 'Eylul', "Eylul"}, month_name)++
-	assertEqual(month_name(10, tr), {10, 'Ekim', "Ekim"}, month_sname)++
-	assertEqual(month_name(11, tr), {11, 'Kasim', "Kasim"}, month_sname)++
-	assertEqual(month_name(12, tr), {12, 'Aralik', "Aralik"}, month_sname)++
-	assertEqual(month_name(13, tr), {13, 'not_found', "not_found"}, month_sname)++
-	assertEqual(month_sname(DateTime), {2, 'Feb', "Feb"}, 'month_sname by datetime')++
-	assertEqual(month_sname(1), {1, 'Jan', "Jan"}, month_sname)++
-	assertEqual(month_sname(2), {2, 'Feb', "Feb"}, month_sname)++
-	assertEqual(month_sname(3), {3, 'Mar', "Mar"}, month_sname)++
-	assertEqual(month_sname(4), {4, 'Apr', "Apr"}, month_sname)++
-	assertEqual(month_sname(5), {5, 'May', "May"}, month_sname)++
-	assertEqual(month_sname(6), {6, 'Jun', "Jun"}, month_sname)++
-	assertEqual(month_sname(7), {7, 'Jul', "Jul"}, month_sname)++
-	assertEqual(month_sname(8), {8, 'Aug', "Aug"}, month_sname)++
-	assertEqual(month_sname(9), {9, 'Sep', "Sep"}, month_sname)++
-	assertEqual(month_sname(10), {10, 'Oct', "Oct"}, month_sname)++
-	assertEqual(month_sname(11), {11, 'Nov', "Nov"}, month_sname)++
-	assertEqual(month_sname(12), {12, 'Dec', "Dec"}, month_sname)++
-	assertEqual(month_sname(13), {13, 'not_found', "not_found"}, month_sname)++
-	assertEqual(month_sname(DateTime, en), {2, 'Feb', "Feb"}, 'month_sname by datetime')++
-	assertEqual(month_sname(1, en), {1, 'Jan', "Jan"}, month_sname)++
-	assertEqual(month_sname(2, en), {2, 'Feb', "Feb"}, month_sname)++
-	assertEqual(month_sname(3, en), {3, 'Mar', "Mar"}, month_sname)++
-	assertEqual(month_sname(4, en), {4, 'Apr', "Apr"}, month_sname)++
-	assertEqual(month_sname(5, en), {5, 'May', "May"}, month_sname)++
-	assertEqual(month_sname(6, en), {6, 'Jun', "Jun"}, month_sname)++
-	assertEqual(month_sname(7, en), {7, 'Jul', "Jul"}, month_sname)++
-	assertEqual(month_sname(8, en), {8, 'Aug', "Aug"}, month_sname)++
-	assertEqual(month_sname(9, en), {9, 'Sep', "Sep"}, month_sname)++
-	assertEqual(month_sname(10, en), {10, 'Oct', "Oct"}, month_sname)++
-	assertEqual(month_sname(11, en), {11, 'Nov', "Nov"}, month_sname)++
-	assertEqual(month_sname(12, en), {12, 'Dec', "Dec"}, month_sname)++
-	assertEqual(month_sname(13, en), {13, 'not_found', "not_found"}, month_sname)++
-	assertEqual(month_sname(DateTime, tr), {2, 'Sub', "Sub"}, 'month_sname by datetime')++
-	assertEqual(month_sname(1, tr), {1, 'Oca', "Oca"}, month_sname)++
-	assertEqual(month_sname(2, tr), {2, 'Sub', "Sub"}, month_sname)++
-	assertEqual(month_sname(3, tr), {3, 'Mar', "Mar"}, month_sname)++
-	assertEqual(month_sname(4, tr), {4, 'Nis', "Nis"}, month_sname)++
-	assertEqual(month_sname(5, tr), {5, 'May', "May"}, month_sname)++
-	assertEqual(month_sname(6, tr), {6, 'Haz', "Haz"}, month_sname)++
-	assertEqual(month_sname(7, tr), {7, 'Tem', "Tem"}, month_sname)++
-	assertEqual(month_sname(8, tr), {8, 'Agu', "Agu"}, month_sname)++
-	assertEqual(month_sname(9, tr), {9, 'Eyl', "Eyl"}, month_sname)++
-	assertEqual(month_sname(10, tr), {10, 'Eki', "Eki"}, month_sname)++
-	assertEqual(month_sname(11, tr), {11, 'Kas', "Kas"}, month_sname)++
-	assertEqual(month_sname(12, tr), {12, 'Ara', "Ara"}, month_sname)++
-	assertEqual(month_sname(13, tr), {13, 'not_found', "not_found"}, month_sname)
+	assertEqual(dayname_of_the_week(DateTime), {4, "Thursday", "Thu"}, 'dayname_of_the_week by datetime')++
+	assertEqual(dayname_of_the_week(1), {1, "Monday", "Mon"}, 'dayname_of_the_week')++
+	assertEqual(dayname_of_the_week(2), {2, "Tuesday", "Tue"}, 'dayname_of_the_week')++
+	assertEqual(dayname_of_the_week(3), {3, "Wednesday", "Wed"}, 'dayname_of_the_week')++
+	assertEqual(dayname_of_the_week(4), {4, "Thursday", "Thu"}, 'dayname_of_the_week')++
+	assertEqual(dayname_of_the_week(5), {5, "Friday", "Fri"}, 'dayname_of_the_week')++
+	assertEqual(dayname_of_the_week(6), {6, "Saturday", "Sat"}, 'dayname_of_the_week')++
+	assertEqual(dayname_of_the_week(7), {7, "Sunday", "Sun"}, 'dayname_of_the_week') ++
+	assertEqual(dayname_of_the_week(DateTime, en), {4, "Thursday", "Thu"}, 'dayname_of_the_week by datetime en')++
+	assertEqual(dayname_of_the_week(1, en), {1, "Monday", "Mon"}, 'dayname_of_the_week en')++
+	assertEqual(dayname_of_the_week(2, en), {2, "Tuesday", "Tue"}, 'dayname_of_the_week en')++
+	assertEqual(dayname_of_the_week(3, en), {3, "Wednesday", "Wed"}, 'dayname_of_the_week en')++
+	assertEqual(dayname_of_the_week(4, en), {4, "Thursday", "Thu"}, 'dayname_of_the_week en')++
+	assertEqual(dayname_of_the_week(5, en), {5, "Friday", "Fri"}, 'dayname_of_the_week en')++
+	assertEqual(dayname_of_the_week(6, en), {6, "Saturday", "Sat"}, 'dayname_of_the_week en')++
+	assertEqual(dayname_of_the_week(7, en), {7, "Sunday", "Sun"}, 'dayname_of_the_week en') ++
+	assertEqual(dayname_of_the_week(DateTime, tr), {4, "Persembe", "Per"}, 'dayname_of_the_week by datetime tr')++
+	assertEqual(dayname_of_the_week(1, tr), {1, "Pazartesi", "Pts"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(2, tr), {2, "Sali", "Sal"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(3, tr), {3, "Carsamba", "Car"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(4, tr), {4, "Persembe", "Per"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(5, tr), {5, "Cuma", "Cum"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(6, tr), {6, "Cumartesi", "Cts"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(7, tr), {7, "Pazar", "Paz"}, 'dayname_of_the_week tr') ++
+	assertEqual(month_name(DateTime), {2, "February", "Feb"}, 'month_name by datetime')++
+	assertEqual(month_name(1), {1, "January", "Jan"}, month_name)++
+	assertEqual(month_name(2), {2, "February", "Feb"}, month_name)++
+	assertEqual(month_name(3), {3, "March", "Mar"}, month_name)++
+	assertEqual(month_name(4), {4, "April", "Apr"}, month_name)++
+	assertEqual(month_name(5), {5, "May", "May"}, month_name)++
+	assertEqual(month_name(6), {6, "June", "Jun"}, month_name)++
+	assertEqual(month_name(7), {7, "July", "Jul"}, month_name)++
+	assertEqual(month_name(8), {8, "August", "Aug"}, month_name)++
+	assertEqual(month_name(9), {9, "September", "Sep"}, month_name)++
+	assertEqual(month_name(10), {10, "October", "Oct"}, month_sname)++
+	assertEqual(month_name(11), {11, "November", "Nov"}, month_sname)++
+	assertEqual(month_name(12), {12, "December", "Dec"}, month_sname)++
+	assertEqual(month_name(13), {13, "not_found", "not_found"}, month_sname)++
+	assertEqual(month_name(DateTime, en), {2, "February", "Feb"}, 'month_name by datetime')++
+	assertEqual(month_name(1, en), {1, "January", "Jan"}, month_name)++
+	assertEqual(month_name(2, en), {2, "February", "Feb"}, month_name)++
+	assertEqual(month_name(3, en), {3, "March", "Mar"}, month_name)++
+	assertEqual(month_name(4, en), {4, "April", "Apr"}, month_name)++
+	assertEqual(month_name(5, en), {5, "May", "May"}, month_name)++
+	assertEqual(month_name(6, en), {6, "June", "Jun"}, month_name)++
+	assertEqual(month_name(7, en), {7, "July", "Jul"}, month_name)++
+	assertEqual(month_name(8, en), {8, "August", "Aug"}, month_name)++
+	assertEqual(month_name(9, en), {9, "September", "Sep"}, month_name)++
+	assertEqual(month_name(10, en), {10, "October", "Oct"}, month_sname)++
+	assertEqual(month_name(11, en), {11, "November", "Nov"}, month_sname)++
+	assertEqual(month_name(12, en), {12, "December", "Dec"}, month_sname)++
+	assertEqual(month_name(13, en), {13, "not_found", "not_found"}, month_sname)++
+	assertEqual(month_name(DateTime, tr), {2, "Subat", "Sub"}, 'month_name by datetime')++
+	assertEqual(month_name(1, tr), {1, "Ocak", "Oca"}, month_name)++
+	assertEqual(month_name(2, tr), {2, "Subat", "Sub"}, month_name)++
+	assertEqual(month_name(3, tr), {3, "Mart", "Mar"}, month_name)++
+	assertEqual(month_name(4, tr), {4, "Nisan", "Nis"}, month_name)++
+	assertEqual(month_name(5, tr), {5, "Mayis", "May"}, month_name)++
+	assertEqual(month_name(6, tr), {6, "Haziran", "Haz"}, month_name)++
+	assertEqual(month_name(7, tr), {7, "Temmuz", "Tem"}, month_name)++
+	assertEqual(month_name(8, tr), {8, "Agustos", "Agu"}, month_name)++
+	assertEqual(month_name(9, tr), {9, "Eylul", "Eyl"}, month_name)++
+	assertEqual(month_name(10, tr), {10, "Ekim", "Eki"}, month_sname)++
+	assertEqual(month_name(11, tr), {11, "Kasim", "Kas"}, month_sname)++
+	assertEqual(month_name(12, tr), {12, "Aralik", "Ara"}, month_sname)++
+	assertEqual(month_name(13, tr), {13, "not_found", "not_found"}, month_sname) ++
+	assertEqual(total_seconds(day), 86400, 'total_seconds day')++
+	assertEqual(total_seconds(hour), 3600, 'total_seconds hour')++
+	assertEqual(total_seconds(minute), 60, 'total_seconds minute')
 ,
 
 	if All =:= true ->	

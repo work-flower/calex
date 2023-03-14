@@ -7,6 +7,7 @@
 		  ]).
 -include("calex.hrl").
 -export([
+	 total_seconds/1,
 	 tomorrow/0,	tomorrow/1,
 	 yesterday/0,	yesterday/1,
 	 next_year/0,	next_year/1,
@@ -26,10 +27,14 @@
 	 end_of_the_minute/0,	 end_of_the_minute/1,
 	 seconds_since_midnight/0,	 seconds_since_midnight/1,
 	 seconds_until_end_of_day/0,	 seconds_until_end_of_day/1,
-	 dayname_of_the_week/0, 	 dayname_of_the_week/1,
-	 month_name/0,	 month_name/1,	 month_name/2,
-	 month_sname/0,	 month_sname/1,	 month_sname/2
+	 dayname_of_the_week/0, 	 dayname_of_the_week/1,	dayname_of_the_week/2,
+	 month_name/0,	 month_name/1,	 month_name/2
 	]).
+
+-spec total_seconds(atom()) -> integer().
+total_seconds(day) -> 86400;
+total_seconds(hour) -> trunc(total_seconds(day) / 24);
+total_seconds(minute) -> trunc(total_seconds(hour) / 60).
 
 -spec tomorrow(calendar:datetime()) -> calendar:datetime().
 tomorrow(DateTime) ->
@@ -238,75 +243,61 @@ add(milliseconds, Milliseconds, DateTime) ->
 	AddedTotalSeconds = TotalSeconds + trunc(Milliseconds/1000),
 	calendar:gregorian_seconds_to_datetime(AddedTotalSeconds).
 
--spec month_sname() -> {integer(), atom(), string()}.
-month_sname() ->
-	month_sname(calendar:local_time()).
-
--spec month_sname(integer() | calendar:datetime()) -> {integer(), atom(), string()}.
-month_sname(MonthNumber) when is_integer(MonthNumber) ->
-	[{_, MonthNamesOfLang}] = [{L, M} || {L, M}<- ?MONTH_NAMES, L =:= en],
-	{Number, _, _, ShortMonthNameAtom, ShortMonthNameString} = month_name(MonthNumber, MonthNamesOfLang),
-	{Number, ShortMonthNameAtom, ShortMonthNameString};
-month_sname(DateTime) ->
-	{{_, MonthNumber, _}, _} = DateTime,
-	month_sname(MonthNumber).
-
--spec month_sname(integer() | calendar:datetime(), atom()) -> {integer(), atom(), string()}.
-month_sname(MonthNumber, LangCode) when is_integer(MonthNumber), is_atom(LangCode) ->
-	[{_, MonthNamesOfLang}] = [{L, M} || {L, M} <- ?MONTH_NAMES, L =:= LangCode],
-	{Number, _, _, ShortMonthNameAtom, ShortMonthNameString} = month_name(MonthNumber, MonthNamesOfLang),
-	{Number, ShortMonthNameAtom, ShortMonthNameString};
-month_sname(DateTime, LangCode) when is_atom(LangCode) ->
-	{{_, MonthNumber, _}, _} = DateTime,
-	month_sname(MonthNumber, LangCode).
-
 -spec month_name() -> {integer(), atom(), string()}.
 month_name() ->
 	month_name(calendar:local_time()).
 
--spec month_name(integer() | calendar:datetime()) -> {integer(), atom(), string()}.
+-spec month_name(integer() | calendar:datetime()) -> {integer(), string(), string()}.
 month_name(MonthNumber) when is_integer(MonthNumber) ->
 	[{_, MonthNamesOfLang}] = [{L, M} || {L, M}<- ?MONTH_NAMES, L =:= en],
-	{Number, MonthNameAtom, MonthNameString, _, _} = month_name(MonthNumber, MonthNamesOfLang),
-	{Number, MonthNameAtom, MonthNameString};
+	month_name(MonthNumber, MonthNamesOfLang);
 month_name(DateTime) ->
 	{{_, MonthNumber, _}, _} = DateTime,
 	month_name(MonthNumber).
 
--spec month_name(integer() | calendar:datetime(), atom()) -> {integer(), atom(), string()}.
+-spec month_name(integer() | calendar:datetime(), atom()) -> {integer(), string(), string()}.
 month_name(MonthNumber, LangCode) when is_integer(MonthNumber), is_atom(LangCode) ->
 	[{_, MonthNamesOfLang}] = [{L, M} || {L, M} <- ?MONTH_NAMES, L =:= LangCode],
-	{Number, LongNameAtom, LongNameString, _, _} = month_name(MonthNumber, MonthNamesOfLang),
-	{Number, LongNameAtom, LongNameString};
+	month_name(MonthNumber, MonthNamesOfLang);
 month_name(DateTime, LangCode) when is_atom(LangCode) ->
 	{{_, MonthNumber, _}, _} = DateTime,
 	month_name(MonthNumber, LangCode);
-month_name(MonthNumber, [{MonthNumber, MonthNameAtom, MonthNameString, SMonthNameAtom, SMonthNameString} | _]) ->
-	{MonthNumber, MonthNameAtom, MonthNameString, SMonthNameAtom, SMonthNameString};
+month_name(MonthNumber, [{MonthNumber, LongMonthName, ShortMonthName} | _]) ->
+	{MonthNumber, LongMonthName, ShortMonthName};
 month_name(MonthNumber, [_ | T]) ->
 	month_name(MonthNumber, T);
 month_name(MonthNumber, []) ->
-	{MonthNumber, not_found, "not_found", not_found, "not_found"}.
+	{MonthNumber, "not_found", "not_found"}.
 
 -spec dayname_of_the_week() -> {integer(), _}.
 dayname_of_the_week() ->
 	dayname_of_the_week(calendar:local_time()).
 
--spec dayname_of_the_week(integer() | calendar:datetime()) -> {integer, _}.
+
+-spec dayname_of_the_week(integer() | calendar:datetime()) -> {integer(), string(), string()}.
 dayname_of_the_week(DayNumber) when is_integer(DayNumber) ->
-        dayname_of_the_week(DayNumber, ?DAY_NAMES);
+	[{_, DayNames}] = [{L, D} || {L, D} <- ?DAY_NAMES, L =:= en],
+        dayname_of_the_week(DayNumber, DayNames);
 dayname_of_the_week(DateTime) ->
 	{Date, _} = DateTime,
 	DayNumber = calendar:day_of_the_week(Date),
         dayname_of_the_week(DayNumber).
 	
-
-dayname_of_the_week(DayNumber, [{DayNumber, DayName} | _]) ->
-        {DayNumber, DayName};
+-spec dayname_of_the_week(integer() | calendar:datetime(), atom()) -> {integer(), string(), string()}.
+dayname_of_the_week(DayNumber, LangCode) when is_integer(DayNumber), is_atom(LangCode) ->
+	[{_, DayNames}] = [{L, D} || {L, D} <- ?DAY_NAMES, L =:= LangCode],
+        dayname_of_the_week(DayNumber, DayNames);
+dayname_of_the_week(DateTime, LangCode) when is_atom(LangCode) ->
+	{Date, _} = DateTime,
+	DayNumber = calendar:day_of_the_week(Date),
+	[{_, DayNames}] = [{L, D} || {L, D} <- ?DAY_NAMES, L =:= LangCode],
+        dayname_of_the_week(DayNumber, DayNames);
+dayname_of_the_week(DayNumber, [{DayNumber, LongDayName, ShortDayName} | _]) ->
+        {DayNumber, LongDayName, ShortDayName};
 dayname_of_the_week(DayNumber, [_ | T]) ->
         dayname_of_the_week(DayNumber, T);
 dayname_of_the_week(DayNumber, []) ->
-	{DayNumber, not_found}.
+	{DayNumber, "not_found", "not_found"}.
 
 %%	RUBY INSPIRED DATE TIME FORMAT STRINGS
 %%

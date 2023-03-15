@@ -5,6 +5,8 @@
 		   date_time_to_gregorian_seconds/1,
 		   gregorian_seconds_to_date_time/1
 		  ]).
+-import(string, [slice/3, pad/4, uppercase/1, lowercase/1]).
+-import(unicode, [characters_to_list/1]).
 -include("calex.hrl").
 -export([
 	 total_seconds/1,
@@ -28,7 +30,8 @@
 	 seconds_since_midnight/0,	 seconds_since_midnight/1,
 	 seconds_until_end_of_day/0,	 seconds_until_end_of_day/1,
 	 dayname_of_the_week/0, 	 dayname_of_the_week/1,	dayname_of_the_week/2,
-	 month_name/0,	 month_name/1,	 month_name/2
+	 month_name/0,	 month_name/1,	 month_name/2,
+	 format/2
 	]).
 
 -spec total_seconds(atom()) -> integer().
@@ -273,7 +276,6 @@ month_name(MonthNumber, []) ->
 dayname_of_the_week() ->
 	dayname_of_the_week(calendar:local_time()).
 
-
 -spec dayname_of_the_week(integer() | calendar:datetime()) -> {integer(), string(), string()}.
 dayname_of_the_week(DayNumber) when is_integer(DayNumber) ->
 	[{_, DayNames}] = [{L, D} || {L, D} <- ?DAY_NAMES, L =:= en],
@@ -342,4 +344,121 @@ dayname_of_the_week(DayNumber, []) ->
 %%
 %%
 
+-spec format(string(), calendar:datetime()) -> string().
+format(Format, DateTime) ->
+	{match, Indexed} = re:run(Format, "(\%[a-zA-Z\+])([0-9]*)", [global, {capture, all, index}]),
+	{match, Listed} = re:run(Format, "(\%[a-zA-Z\+])([0-9]*)", [global, {capture, all, list}]),
+	Combined = combine_indexed_lists(Indexed, Listed),
+	RegexTokens = [NamedHead || {_, [_, NamedHead, _]} <- Combined], %ignore ay arity or indexes for now
+	SetRegexTokens = sets:from_list(RegexTokens),
+	UniqueRegexTokens = sets:to_list(SetRegexTokens),
+	format_internal(Format, UniqueRegexTokens, DateTime).
 
+format_internal(Format, [H | T], DateTime) ->
+	DatePartValue = datepart(list_to_atom(H), DateTime),
+	Replaced = characters_to_list(re:replace(Format, H, DatePartValue)),
+	format_internal(Replaced, T, DateTime);
+format_internal(Format, [], _) ->
+	Format.
+
+combine_indexed_lists([LH | Lefts], [RH | Rights]) ->
+	[{LH, RH} | combine_indexed_lists(Lefts, Rights)];
+combine_indexed_lists([], []) ->
+	[].
+
+datepart('%Y', DateTime) ->
+	{{Year, _, _}, _} = DateTime,
+	integer_to_list(Year);
+datepart('%y', DateTime) ->
+	{{Year, _, _}, _} = DateTime,
+	slice(integer_to_list(Year), 2, 2);
+datepart('%C', DateTime) ->
+	{{Year, _, _}, _} = DateTime,
+	" " ++ slice(integer_to_list(Year), 2, 2);
+datepart('%m', DateTime) ->
+	{{_, Month, _}, _} = DateTime,
+	pad(integer_to_list(Month), 2, leading, "0");
+datepart('%B', DateTime) ->
+	{{_, Month, _}, _} = DateTime,
+	{_, Name, _} = month_name(Month),
+	Name;
+datepart('%b', DateTime) ->
+	{{_, Month, _}, _} = DateTime,
+	{_, _, ShortName} = month_name(Month),
+	ShortName;
+datepart('%h', DateTime) ->
+	datepart('%b', DateTime);
+datepart('%d', DateTime) ->
+	{{_, _, Day}, _} = DateTime,
+	pad(integer_to_list(Day), 2, leading, "0");
+datepart('%e', DateTime) ->
+	{{_, _, Day}, _} = DateTime,
+	pad(integer_to_list(Day), 2, leading, " ");
+datepart('%j', DateTime) ->
+	not_yet_implemented;
+datepart('%H', DateTime) ->
+	{_, {Hour, _, _}} = DateTime,
+	pad(integer_to_list(Hour), 2, leading, "0");
+datepart('%k', DateTime) ->
+	{_, {Hour, _, _}} = DateTime,
+	pad(integer_to_list(Hour), 2, leading, " ");
+datepart('%I', DateTime) ->
+	{_, {Hour, _, _}} = DateTime,
+	pad(integer_to_list(Hour rem 12), 2, leading, "0");
+datepart('%l', DateTime) ->
+	{_, {Hour, _, _}} = DateTime,
+	pad(integer_to_list(Hour rem 12), 2, leading, " ");
+datepart('%P', DateTime) ->
+	{_, {Hour, _, _}} = DateTime,
+	if
+		Hour div 12 =:= 1 -> "PM";
+		true -> "AM"
+	end;
+datepart('%p', DateTime) ->
+	lowercase(datepart('%P', DateTime));
+datepart('%M', DateTime) ->
+	{_, {_, Minute, _}} = DateTime,
+	pad(integer_to_list(Minute), 2, leading, "0");
+datepart('%S', DateTime) ->
+	{_, {_, _, Second}} = DateTime,
+	pad(integer_to_list(Second), 2, leading, "0");
+datepart('%s', DateTime) ->
+	{_, {_, _, Second}} = DateTime,
+	pad(integer_to_list(Second), 2, leading, " ");
+datepart('%A', DateTime) ->
+	{_, Name, _} = dayname_of_the_week(DateTime),
+	Name;
+datepart('%a', DateTime) ->
+	{_, _, ShortName} = dayname_of_the_week(DateTime),
+	ShortName;
+datepart('%u', DateTime) ->
+	{Number, _, _} = dayname_of_the_week(DateTime),
+	integer_to_list(Number);
+datepart('%w', DateTime) ->
+	integer_to_list(list_to_integer(datepart('%u', DateTime)) -1);
+datepart('%U', DateTime) ->
+	not_yet_implemented;
+datepart('%W', DateTime) ->
+	not_yet_implemented;
+datepart('%c', DateTime) ->
+	format("%a %b %e %T %Y", DateTime);
+datepart('%D', DateTime) ->
+	format("%m/%d/%y", DateTime);
+datepart('%F', DateTime) ->
+	format("%Y-%m-%d", DateTime);
+datepart('%v', DateTime) ->
+	uppercase(format("%e-%b-%Y", DateTime));
+datepart('%x', DateTime) ->
+	datepart('%D', DateTime);
+datepart('%X', DateTime) ->
+	datepart('%T', DateTime);
+datepart('%r', DateTime) ->
+	format("%I:%M:%S %p", DateTime);
+datepart('%R', DateTime) ->
+	format("%H:%M", DateTime);
+datepart('%T', DateTime) ->
+	format("%H:%M:%S", DateTime);
+datepart('%+', DateTime) ->
+	format("%a %b %e %H:%M:%S %Z %Y", DateTime);
+datepart(AnyOther, DateTime) ->
+	exit(AnyOther).

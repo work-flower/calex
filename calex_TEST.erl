@@ -3,7 +3,8 @@
 -import(calex,
        [
 	total_seconds/1,
-	tomorrow/0,
+	 epoch/0, until_epoch/0,
+	 tomorrow/0,
          tomorrow/1,
          yesterday/0,
          yesterday/1,
@@ -39,8 +40,15 @@
          end_of_the_minute/1,
 	 seconds_since_midnight/0,
  	 seconds_since_midnight/1,
+	 days_since_begin_of_year/0,
+	 days_since_begin_of_year/1,
 	 seconds_until_end_of_day/0,
 	 seconds_until_end_of_day/1,
+	 days_between/2,	days_from_now/1, days_until_now/1,
+	 days_since_begin_of_week/0,    days_since_begin_of_week/1,
+	 days_until_end_of_year/0,
+	 days_until_end_of_year/1,
+	 days_until_end_of_week/0,  days_until_end_of_week/1,
 	 dayname_of_the_week/0,
          dayname_of_the_week/1,
          dayname_of_the_week/2,
@@ -49,7 +57,8 @@
 	 month_name/2,
 	 month_sname/0,
 	 month_sname/1,
-	 month_sname/2
+	 month_sname/2,
+	 format/2
        ]
        ).
 
@@ -64,7 +73,49 @@ test_individual(DateTime, All) ->
 	io:format("TEST Against Date Time ~p~n", [DateTime]),
 	{Date, Time} = DateTime,
 	{Hour, Minute, _} = Time,
-	TestResults = 
+	TestResults =
+	assertEqual(days_since_begin_of_week(DateTime), 4, 'days_since_begin_of_week') ++ 
+	assertEqual(days_until_end_of_week(DateTime), 3, 'days_until_end_of_week') ++ 
+	assertEqual(format("%y", DateTime), "23", 'format %y') ++ 
+	assertEqual(format("%Y", DateTime), "2023", 'format %Y') ++ 
+	assertEqual(format("%C", DateTime), "20", 'format %C') ++ 
+	assertEqual(format("%m", DateTime), "02", 'format %m') ++ 
+	assertEqual(format("%B", DateTime), "February", 'format %B') ++ 
+	assertEqual(format("%b", DateTime), "Feb", 'format %b') ++ 
+	assertEqual(format("%h", DateTime), "Feb", 'format %h') ++ 
+	assertEqual(format("%d", start_of_the_month(DateTime)), "01", 'format %d') ++ 
+	assertEqual(format("%e", start_of_the_month(DateTime)), " 1", 'format %e') ++ 
+	assertEqual(format("%j", DateTime), "53", 'format %j') ++ 
+	assertEqual(format("%H", DateTime), "18", 'format %H') ++ 
+	assertEqual(format("%H", start_of_the_day(DateTime)), "00", 'format %H') ++ 
+	assertEqual(format("%k", DateTime), "18", 'format %k') ++ 
+	assertEqual(format("%k", start_of_the_day(DateTime)), " 0", 'format %k') ++ 
+	assertEqual(format("%I", DateTime), "06", 'format %I') ++ 
+	assertEqual(format("%l", DateTime), " 6", 'format %l') ++ 
+	assertEqual(format("%P", DateTime), "PM", 'format %P') ++ 
+	assertEqual(format("%p", DateTime), "pm", 'format %p') ++ 
+	assertEqual(format("%P", start_of_the_day(DateTime)), "AM", 'format %P') ++ 
+	assertEqual(format("%p", start_of_the_day(DateTime)), "am", 'format %p') ++ 
+	assertEqual(format("%M", DateTime), "31", 'format %M') ++ 
+	assertEqual(format("%M", start_of_the_hour(DateTime)), "00", 'format %M') ++ 
+	assertEqual(format("%S", DateTime), "01", 'format %S') ++ 
+	assertEqual(format("%s", DateTime), "1677177061", 'format %s') ++ 
+	assertEqual(format("%A", DateTime), "Thursday", 'format %A') ++ 
+	assertEqual(format("%a", DateTime), "Thu", 'format %a') ++ 
+	assertEqual(format("%u", DateTime), "4", 'format %u') ++ 
+	assertEqual(format("%w", DateTime), "3", 'format %w') ++ 
+	assertEqual(format("%W", DateTime), "8", 'format %W') ++ 
+	assertEqual(format("%c", DateTime), "Thu Feb 23 18:31:01 2023", 'format %c') ++ 
+	assertEqual(format("%D", DateTime), "02/23/2023", 'format %D') ++ 
+	assertEqual(format("%F", DateTime), "2023-02-23", 'format %F') ++ 
+	assertEqual(format("%v", DateTime), "23-FEB-2023", 'format %v') ++ 
+	assertEqual(format("%x", DateTime), "02/23/2023", 'format %x') ++ 
+	assertEqual(format("%X", DateTime), "18:31:01", 'format %X') ++ 
+	assertEqual(format("%r", DateTime), "06:31:01 PM", 'format %r') ++ 
+	assertEqual(format("%R", DateTime), "18:31", 'format %R') ++ 
+	assertEqual(format("%T", DateTime), "18:31:01", 'format %T') ++ 
+	assertEqual(format("%Z", DateTime), under_construction, 'format %Z') ++ 
+	assertEqual(format("%+", DateTime), "Thu Feb 23 18:31:01 -5:00:00 2023", 'format %+') ++ 
 	assertEqual(tomorrow(DateTime), {2023,02,24}, tomorrow) ++
         assertEqual(yesterday(DateTime), {2023, 02, 22}, yesterday) ++
 	assertEqual(next_year(DateTime), {{2024, 02, 23}, Time}, next_year) ++
@@ -152,7 +203,14 @@ test_individual(DateTime, All) ->
 	assertEqual(month_name(13, tr), {13, "not_found", "not_found"}, month_sname) ++
 	assertEqual(total_seconds(day), 86400, 'total_seconds day')++
 	assertEqual(total_seconds(hour), 3600, 'total_seconds hour')++
-	assertEqual(total_seconds(minute), 60, 'total_seconds minute')
+	assertEqual(total_seconds(minute), 60, 'total_seconds minute')++
+	assertEqual(days_since_begin_of_year(DateTime), 53, 'days_since_begin_of_year')++
+	assertEqual(days_until_end_of_year(DateTime), 312, 'days_until_end_of_year')++
+	assertEqual(days_between({{2023,1,1},{0,0,0}}, DateTime), 53, 'days_between')++
+	assertEqual(days_until_now(DateTime), 23, 'days_until_now')++
+	assertEqual(days_from_now({{2023,12,12},{23,59,59}}), 312, 'days_from_now')++
+	assertEqual(epoch(), epoch(), epoch)++
+	assertEqual(until_epoch(), until_epoch(), until_epoch)
 ,
 
 	if All =:= true ->	

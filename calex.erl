@@ -3,13 +3,14 @@
 		   local_time/0, 
 		   day_of_the_week/1, 
 		   date_time_to_gregorian_seconds/1,
-		   gregorian_seconds_to_date_time/1
+		   gregorian_seconds_to_date_time/1,
+		   is_leap_year/1
 		  ]).
 -import(string, [slice/3, pad/4, uppercase/1, lowercase/1]).
 -import(unicode, [characters_to_list/1]).
 -include("calex.hrl").
 -export([
-	 total_seconds/1,
+	 total_seconds/1, epoch_start_date/0,	epoch/0,	until_epoch/0,
 	 tomorrow/0,	tomorrow/1,
 	 yesterday/0,	yesterday/1,
 	 next_year/0,	next_year/1,
@@ -28,8 +29,17 @@
 	 end_of_the_hour/0,	 end_of_the_hour/1,
 	 end_of_the_minute/0,	 end_of_the_minute/1,
 	 seconds_since_midnight/0,	 seconds_since_midnight/1,
+	 seconds_since_begin_of_year/0,	seconds_since_begin_of_year/1,
+	 days_since_begin_of_week/0,	days_since_begin_of_week/1, 
+	 days_since_begin_of_year/0,	days_since_begin_of_year/1,
+	 days_between/2,	days_until_now/1,	days_from_now/1,
+	 seconds_between/2,
+	 week_number/0,		week_number/1,
 	 seconds_until_end_of_day/0,	 seconds_until_end_of_day/1,
-	 dayname_of_the_week/0, 	 dayname_of_the_week/1,	dayname_of_the_week/2,
+	 seconds_until_end_of_year/0,	 seconds_until_end_of_year/1,
+	 days_until_end_of_week/0,	 days_until_end_of_week/1, 
+	 days_until_end_of_year/0,	 days_until_end_of_year/1,
+	 dayname_of_the_week/0, 	 dayname_of_the_week/1,		dayname_of_the_week/2,
 	 month_name/0,	 month_name/1,	 month_name/2,
 	 format/2
 	]).
@@ -38,6 +48,17 @@
 total_seconds(day) -> 86400;
 total_seconds(hour) -> trunc(total_seconds(day) / 24);
 total_seconds(minute) -> trunc(total_seconds(hour) / 60).
+
+-spec epoch() -> integer().
+epoch() ->
+	seconds_between(epoch_start_date(), calendar:local_time()).
+
+-spec epoch_start_date() -> calendar:datetime().
+epoch_start_date() -> {{1970, 1, 1}, {0, 0, 0}}.
+
+-spec until_epoch() -> integer().
+until_epoch() ->
+	seconds_between({{1, 1, 1}, {0,0,0}}, calendar:local_time()).
 
 -spec tomorrow(calendar:datetime()) -> calendar:datetime().
 tomorrow(DateTime) ->
@@ -197,11 +218,54 @@ start_of_the_minute() ->
 -spec  seconds_since_midnight(calendar:datetime()) -> integer().
 seconds_since_midnight(DateTime) ->
 	{Date, _} = DateTime,
-	calendar:datetime_to_gregorian_seconds(DateTime) - calendar:datetime_to_gregorian_seconds({Date, {0,0,0}}).
+	seconds_between({Date, {0,0,0}}, DateTime).
 
 -spec  seconds_since_midnight() -> integer().
 seconds_since_midnight() ->
 	seconds_since_midnight(calendar:local_time()).
+
+
+-spec seconds_since_begin_of_year(calendar:datetime()) -> integer().
+seconds_since_begin_of_year(DateTime) ->
+	{{Year, _, _}, _} = DateTime,
+	seconds_between({{Year, 1, 1}, {0,0,0}}, DateTime). 
+
+-spec seconds_since_begin_of_year() -> integer().
+seconds_since_begin_of_year() ->
+	seconds_since_begin_of_year(calendar:local_time()).
+
+-spec days_since_begin_of_week() -> integer().
+days_since_begin_of_week() ->
+	not_implemented.
+
+-spec days_since_begin_of_week(calendar:datetime()) -> integer().
+days_since_begin_of_week(DateTime) ->
+	{Number, _, _} = dayname_of_the_week(DateTime),
+	Number.
+
+-spec days_since_begin_of_year(calendar:datetime()) -> integer().
+days_since_begin_of_year(DateTime) ->
+	seconds_since_begin_of_year(DateTime) div total_seconds(day).
+
+-spec days_since_begin_of_year() -> integer().
+days_since_begin_of_year() ->
+	days_since_begin_of_year(calendar:local_time()).
+
+-spec seconds_between(calendar:datetime(), calendar:datetime()) -> integer().
+seconds_between(DateTimeFrom, DateTimeTo) ->
+	calendar:datetime_to_gregorian_seconds(DateTimeTo) - calendar:datetime_to_gregorian_seconds(DateTimeFrom).
+
+-spec days_between(calendar:datetime(), calendar:datetime()) -> integer().
+days_between(DateTimeFrom, DateTimeTo) ->
+	seconds_between(DateTimeFrom, DateTimeTo) div total_seconds(day).
+
+-spec days_until_now(calendar:datetime()) -> integer().
+days_until_now(DateTimeFrom) ->
+	days_between(DateTimeFrom, calendar:local_time()).
+
+-spec days_from_now(calendar:datetime()) -> integer().
+days_from_now(DateTimeTo) ->
+	days_between(calendar:local_time(), DateTimeTo).
 
 -spec  seconds_until_end_of_day(calendar:datetime()) -> integer().
 seconds_until_end_of_day(DateTime) ->
@@ -212,22 +276,53 @@ seconds_until_end_of_day(DateTime) ->
 seconds_until_end_of_day() ->
 	seconds_until_end_of_day(calendar:local_time()).
 
+-spec  seconds_until_end_of_year(calendar:datetime()) -> integer().
+seconds_until_end_of_year(DateTime) ->
+	{{Year, _, _}, _} = DateTime,
+	calendar:datetime_to_gregorian_seconds({{Year, 12, 31}, {23,59,59}}) + 1 - calendar:datetime_to_gregorian_seconds(DateTime).
+
+-spec  seconds_until_end_of_year() -> integer().
+seconds_until_end_of_year() ->
+	seconds_until_end_of_year(calendar:local_time()).
+
+-spec days_until_end_of_week() -> integer().
+days_until_end_of_week() ->
+	days_until_end_of_week(calendar:local_time()).
+
+-spec days_until_end_of_week(calendar:datetime()) -> integer().
+days_until_end_of_week(DateTime) ->
+	{Number, _, _} = dayname_of_the_week(DateTime),
+	7 -  Number.
+
+-spec days_until_end_of_year(calendar:datetime()) -> integer().
+days_until_end_of_year(DateTime) ->
+	{{Year, _, _}, _} = DateTime,
+	if Year rem 4 =:= 0 -> 366 - days_since_begin_of_year(DateTime);
+	   true -> 365 - days_since_begin_of_year(DateTime)
+	end.
+
+-spec days_until_end_of_year() -> integer().
+days_until_end_of_year() ->
+	days_until_end_of_year(calendar:local_time()).
+
+-spec week_number() -> integer().
+week_number() ->
+	week_number(calendar:local_time()).
+
+-spec week_number(calendar:datetime()) -> integer().
+week_number(DateTime) ->
+	{Date, _} = DateTime,
+	{_, WeekNumber} = calendar:iso_week_number(Date),
+	WeekNumber.
+
 add(year, Years, DateTime) ->
 	{{Year, Month, Day}, Time} = DateTime,
 	{{Year+Years, Month, Day}, Time};
 add(month, Months, DateTime) ->
 	{{Year, Month, Day}, Time} = DateTime,
-	{AdditionalYearCountByGivenMonths, RemainderMonthCountByGivenMonths} = 
-										{
-										 Months div 12, 
-										 Months rem 12
-										},
+	{AdditionalYearCountByGivenMonths, RemainderMonthCountByGivenMonths} = 	{Months div 12, Months rem 12},
 	CandidateMonthValue = Month + RemainderMonthCountByGivenMonths,
-	{ExtraYearAfterMonthAddition, MonthValue} = 
-								{ 
-								 	CandidateMonthValue div 12, 
-									CandidateMonthValue rem 12
-								},
+	{ExtraYearAfterMonthAddition, MonthValue} = {CandidateMonthValue div 12, CandidateMonthValue rem 12},
 	{{Year + AdditionalYearCountByGivenMonths + ExtraYearAfterMonthAddition, MonthValue, Day}, Time}; 
 add(day, Days, DateTime) ->
 	DaysAsMilliseconds = Days * 24 * 60 * 60 * 1000,
@@ -327,7 +422,6 @@ dayname_of_the_week(DayNumber, []) ->
 %% %a - Abbreviated weekday name: Wed
 %% %u - Day of the week, in range (1..7), Monday is 1: 2
 %% %w - Day of the week, in range (0..6), Sunday is 0: 0
-%% %U - Week number of the year, in range (0..53), zero-padded, where each week begins on a Sunday: 27
 %% %W - Week number of the year, in range (0..53), zero-padded, where each week begins on a Monday: 26
 %%
 %% 	--- SHORTHAND CONVERSION SPECIFIERS ---
@@ -346,10 +440,8 @@ dayname_of_the_week(DayNumber, []) ->
 
 -spec format(string(), calendar:datetime()) -> string().
 format(Format, DateTime) ->
-	{match, Indexed} = re:run(Format, "(\%[a-zA-Z\+])([0-9]*)", [global, {capture, all, index}]),
 	{match, Listed} = re:run(Format, "(\%[a-zA-Z\+])([0-9]*)", [global, {capture, all, list}]),
-	Combined = combine_indexed_lists(Indexed, Listed),
-	RegexTokens = [NamedHead || {_, [_, NamedHead, _]} <- Combined], %ignore ay arity or indexes for now
+	RegexTokens = [NamedHead || [_, NamedHead, _] <- Listed], %ignore any arity for now
 	SetRegexTokens = sets:from_list(RegexTokens),
 	UniqueRegexTokens = sets:to_list(SetRegexTokens),
 	format_internal(Format, UniqueRegexTokens, DateTime).
@@ -361,11 +453,6 @@ format_internal(Format, [H | T], DateTime) ->
 format_internal(Format, [], _) ->
 	Format.
 
-combine_indexed_lists([LH | Lefts], [RH | Rights]) ->
-	[{LH, RH} | combine_indexed_lists(Lefts, Rights)];
-combine_indexed_lists([], []) ->
-	[].
-
 datepart('%Y', DateTime) ->
 	{{Year, _, _}, _} = DateTime,
 	integer_to_list(Year);
@@ -374,7 +461,7 @@ datepart('%y', DateTime) ->
 	slice(integer_to_list(Year), 2, 2);
 datepart('%C', DateTime) ->
 	{{Year, _, _}, _} = DateTime,
-	" " ++ slice(integer_to_list(Year), 2, 2);
+	pad(slice(integer_to_list(Year), 0, 2), 2, leading, " ");
 datepart('%m', DateTime) ->
 	{{_, Month, _}, _} = DateTime,
 	pad(integer_to_list(Month), 2, leading, "0");
@@ -395,7 +482,7 @@ datepart('%e', DateTime) ->
 	{{_, _, Day}, _} = DateTime,
 	pad(integer_to_list(Day), 2, leading, " ");
 datepart('%j', DateTime) ->
-	not_yet_implemented;
+	integer_to_list(days_since_begin_of_year(DateTime));
 datepart('%H', DateTime) ->
 	{_, {Hour, _, _}} = DateTime,
 	pad(integer_to_list(Hour), 2, leading, "0");
@@ -423,8 +510,7 @@ datepart('%S', DateTime) ->
 	{_, {_, _, Second}} = DateTime,
 	pad(integer_to_list(Second), 2, leading, "0");
 datepart('%s', DateTime) ->
-	{_, {_, _, Second}} = DateTime,
-	pad(integer_to_list(Second), 2, leading, " ");
+	integer_to_list(seconds_between(epoch_start_date(),  DateTime));
 datepart('%A', DateTime) ->
 	{_, Name, _} = dayname_of_the_week(DateTime),
 	Name;
@@ -436,14 +522,12 @@ datepart('%u', DateTime) ->
 	integer_to_list(Number);
 datepart('%w', DateTime) ->
 	integer_to_list(list_to_integer(datepart('%u', DateTime)) -1);
-datepart('%U', DateTime) ->
-	not_yet_implemented;
 datepart('%W', DateTime) ->
-	not_yet_implemented;
+	integer_to_list(week_number(DateTime));
 datepart('%c', DateTime) ->
 	format("%a %b %e %T %Y", DateTime);
 datepart('%D', DateTime) ->
-	format("%m/%d/%y", DateTime);
+	format("%m/%d/%Y", DateTime);
 datepart('%F', DateTime) ->
 	format("%Y-%m-%d", DateTime);
 datepart('%v', DateTime) ->
@@ -453,12 +537,17 @@ datepart('%x', DateTime) ->
 datepart('%X', DateTime) ->
 	datepart('%T', DateTime);
 datepart('%r', DateTime) ->
-	format("%I:%M:%S %p", DateTime);
+	format("%I:%M:%S %P", DateTime);
 datepart('%R', DateTime) ->
 	format("%H:%M", DateTime);
 datepart('%T', DateTime) ->
 	format("%H:%M:%S", DateTime);
+datepart('%Z', DateTime) ->
+	[UtcDateTime] = calendar:local_time_to_universal_time_dst(DateTime),
+	SecondsDiff = seconds_between(UtcDateTime, DateTime),
+	DateTime,
+	atom_to_list(till_implementing);
 datepart('%+', DateTime) ->
 	format("%a %b %e %H:%M:%S %Z %Y", DateTime);
-datepart(AnyOther, DateTime) ->
-	exit(AnyOther).
+datepart(AnyOther, _) ->
+	atom_to_list(AnyOther) ++ " not_yet_implemented".

@@ -1,7 +1,7 @@
 % @author Aylin Ahmed <aylin.ahmed@jetbot.co.uk>
 % @copyright GPL 3.0 license
 % @version 0.0.1
-% @doc Calendar extension functions for Calendar module of Erlang. This is a beta version of calendar extensions. Please be cautious while using it as it's not tested in any production environment yet thanks for your interest in trying it...
+% @doc Ruby inspired calendar extension functions for Calendar module of Erlang. This is a beta version of calendar extensions. Please be cautious while using it as it's not tested in any production environment yet thanks for your interest in trying it...
 
 -module(calex).
 -import(calendar, [

@@ -110,7 +110,7 @@ Function Details
 >_Provides information of the current day for the given date time or given day number for the given ISO639-1 Language Code._
 
 ### days_between/2
->days_between(DateTimeFrom::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime), DateTimeTo::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer() 
+>days_between(DateTimeFrom::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime), DateTimeTo::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer()  
 >`returns:` Total days between two days as integer.  
 >_Provides total difference in days between given two datetime. Second datetime's day is NOT counted within total days._
 

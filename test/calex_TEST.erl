@@ -1,3 +1,8 @@
+% @author Aylin Ahmed <aylin.ahmed@jetbot.co.uk>
+% @copyright GPL 3.0 License
+% @version 0.0.1
+% @doc Test module to text calex functions.
+
 -module(calex_TEST).
 -export([test/0, test/1]).
 -import(calex,
@@ -62,13 +67,17 @@
        ]
        ).
 
+% @doc Tests all the functions in calex library.
+% @return All test results, including successful tests.
 test(all) ->
 	DateTime = {{2023, 02, 23}, {18, 31, 01}},
 	test_individual(DateTime, true).
+% @doc Tests all the functions in calex library.
+% @return Only failed test results
 test() ->
         DateTime = {{2023, 02, 23}, {18, 31, 01}},
 	test_individual(DateTime, false).
-
+% @private
 test_individual(DateTime, All) ->
 	io:format("TEST Against Date Time ~p~n", [DateTime]),
 	{Date, Time} = DateTime,
@@ -151,11 +160,11 @@ test_individual(DateTime, All) ->
 	assertEqual(dayname_of_the_week(5, en), {5, "Friday", "Fri"}, 'dayname_of_the_week en')++
 	assertEqual(dayname_of_the_week(6, en), {6, "Saturday", "Sat"}, 'dayname_of_the_week en')++
 	assertEqual(dayname_of_the_week(7, en), {7, "Sunday", "Sun"}, 'dayname_of_the_week en') ++
-	assertEqual(dayname_of_the_week(DateTime, tr), {4, "Persembe", "Per"}, 'dayname_of_the_week by datetime tr')++
+	assertEqual(dayname_of_the_week(DateTime, tr), {4, "Perşembe", "Per"}, 'dayname_of_the_week by datetime tr')++
 	assertEqual(dayname_of_the_week(1, tr), {1, "Pazartesi", "Pts"}, 'dayname_of_the_week tr')++
-	assertEqual(dayname_of_the_week(2, tr), {2, "Sali", "Sal"}, 'dayname_of_the_week tr')++
-	assertEqual(dayname_of_the_week(3, tr), {3, "Carsamba", "Car"}, 'dayname_of_the_week tr')++
-	assertEqual(dayname_of_the_week(4, tr), {4, "Persembe", "Per"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(2, tr), {2, "Salı", "Sal"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(3, tr), {3, "Çarşamba", "Çar"}, 'dayname_of_the_week tr')++
+	assertEqual(dayname_of_the_week(4, tr), {4, "Perşembe", "Per"}, 'dayname_of_the_week tr')++
 	assertEqual(dayname_of_the_week(5, tr), {5, "Cuma", "Cum"}, 'dayname_of_the_week tr')++
 	assertEqual(dayname_of_the_week(6, tr), {6, "Cumartesi", "Cts"}, 'dayname_of_the_week tr')++
 	assertEqual(dayname_of_the_week(7, tr), {7, "Pazar", "Paz"}, 'dayname_of_the_week tr') ++
@@ -187,19 +196,19 @@ test_individual(DateTime, All) ->
 	assertEqual(month_name(11, en), {11, "November", "Nov"}, month_sname)++
 	assertEqual(month_name(12, en), {12, "December", "Dec"}, month_sname)++
 	assertEqual(month_name(13, en), {13, "not_found", "not_found"}, month_sname)++
-	assertEqual(month_name(DateTime, tr), {2, "Subat", "Sub"}, 'month_name by datetime')++
+	assertEqual(month_name(DateTime, tr), {2, "Şubat", "Şub"}, 'month_name by datetime')++
 	assertEqual(month_name(1, tr), {1, "Ocak", "Oca"}, month_name)++
-	assertEqual(month_name(2, tr), {2, "Subat", "Sub"}, month_name)++
+	assertEqual(month_name(2, tr), {2, "Şubat", "Şub"}, month_name)++
 	assertEqual(month_name(3, tr), {3, "Mart", "Mar"}, month_name)++
 	assertEqual(month_name(4, tr), {4, "Nisan", "Nis"}, month_name)++
-	assertEqual(month_name(5, tr), {5, "Mayis", "May"}, month_name)++
+	assertEqual(month_name(5, tr), {5, "Mayıs", "May"}, month_name)++
 	assertEqual(month_name(6, tr), {6, "Haziran", "Haz"}, month_name)++
 	assertEqual(month_name(7, tr), {7, "Temmuz", "Tem"}, month_name)++
-	assertEqual(month_name(8, tr), {8, "Agustos", "Agu"}, month_name)++
-	assertEqual(month_name(9, tr), {9, "Eylul", "Eyl"}, month_name)++
+	assertEqual(month_name(8, tr), {8, "Ağustos", "Ağu"}, month_name)++
+	assertEqual(month_name(9, tr), {9, "Eylül", "Eyl"}, month_name)++
 	assertEqual(month_name(10, tr), {10, "Ekim", "Eki"}, month_sname)++
-	assertEqual(month_name(11, tr), {11, "Kasim", "Kas"}, month_sname)++
-	assertEqual(month_name(12, tr), {12, "Aralik", "Ara"}, month_sname)++
+	assertEqual(month_name(11, tr), {11, "Kasım", "Kas"}, month_sname)++
+	assertEqual(month_name(12, tr), {12, "Aralık", "Ara"}, month_sname)++
 	assertEqual(month_name(13, tr), {13, "not_found", "not_found"}, month_sname) ++
 	assertEqual(total_seconds(day), 86400, 'total_seconds day')++
 	assertEqual(total_seconds(hour), 3600, 'total_seconds hour')++
@@ -228,7 +237,7 @@ test_individual(DateTime, All) ->
 		true ->
 		   "All tests passed. Use calex_TEST:test(all) for complete result"
 	end.
-
+% @private
 assertEqual(LeftPredicate, RightPredicate, FunctionName) ->
 	[
 	 	{

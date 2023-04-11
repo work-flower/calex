@@ -22,17 +22,17 @@
 		tr,
 		[
 			{1, "Ocak", "Oca" }, 
-			{2, "Subat", "Sub" }, 
+			{2, "Şubat", "Şub" }, 
 			{3, "Mart", "Mar" }, 
 			{4, "Nisan", "Nis" }, 
-			{5, "Mayis", "May" }, 
+			{5, "Mayıs", "May" }, 
 			{6, "Haziran", "Haz" }, 
 			{7, "Temmuz", "Tem" }, 
-			{8, "Agustos", "Agu" }, 
-			{9, "Eylul", "Eyl" }, 
+			{8, "Ağustos", "Ağu" }, 
+			{9, "Eylül", "Eyl" }, 
 			{10, "Ekim", "Eki" }, 
-			{11, "Kasim", "Kas" }, 
-			{12, "Aralik", "Ara" } 
+			{11, "Kasım", "Kas" }, 
+			{12, "Aralık", "Ara" } 
 		]
 	 }
 	]
@@ -57,9 +57,9 @@
 	    tr,
 		[
 			{1, "Pazartesi", "Pts" }, 
-			{2, "Sali", "Sal" }, 
-			{3, "Carsamba", "Car" }, 
-			{4, "Persembe", "Per" }, 
+			{2, "Salı", "Sal" }, 
+			{3, "Çarşamba", "Çar" }, 
+			{4, "Perşembe", "Per" }, 
 			{5, "Cuma", "Cum" }, 
 			{6, "Cumartesi", "Cts" }, 
 			{7, "Pazar", "Paz" }

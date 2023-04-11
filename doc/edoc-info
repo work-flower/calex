@@ -1,2 +1,2 @@
 %% encoding: UTF-8
-{modules,[calex]}.
+{modules,[calex,calex_TEST]}.

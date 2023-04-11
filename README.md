@@ -101,13 +101,13 @@ Function Details
 
 ### dayname_of_the_week/1
 >dayname_of_the_week(DayNumber::integer() | [calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> {integer(), string(), string()}  
->`returns:` Day number starting from 1, long name of the day and short name of the day
+>`returns:` Day number starting from 1, long name of the day and short name of the day.  
 >_Provides information of the day for the given datetime or given day number in English._
 
 ### dayname_of_the_week/2
 >dayname_of_the_week(DayNumber::integer() | [calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime), LangCode::atom()) -> {integer(), string(), string()}  
->`returns:` Day number starting from 1, long name of the day and short name of the day
->_Provides information of the current day for the given date time or given day number for the given ISO639-1 Language Code
+>`returns:` Day number starting from 1, long name of the day and short name of the day.  
+>_Provides information of the current day for the given date time or given day number for the given ISO639-1 Language Code._
 
 ### days_between/2
 >days_between(DateTimeFrom::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime), DateTimeTo::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer() 
@@ -115,42 +115,42 @@ Function Details
 >_Provides total difference in days between given two datetime. Second datetime's day is NOT counted within total days._
 
 ### days_from_now/1
->days_from_now(DateTimeTo::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer() 
+>days_from_now(DateTimeTo::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer()  
 >`returns:` Total days between current datetime and given datetime as integer.  
 >_Provides total difference in days between current datetime and given datetime. Given datetime's day is NOT counted within total days._
 
 ### days_since_begin_of_week/0
->days_since_begin_of_week() -> integer() 
+>days_since_begin_of_week() -> integer()  
 >`returns:` Total days spent since the beginning of the week as integer().  
 >_Provides total days spent since the begining of the week for current datetime. Current day is also counted within total days._
 
 ### days_since_begin_of_week/1
->days_since_begin_of_week(DateTime::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer() 
+>days_since_begin_of_week(DateTime::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer()  
 >`returns:` Total days spent since the beginning of the week as integer().  
 >_Provides total days spent since the begining of the week for the given datetime. Given datetime's day is also counted within total days._
 
 ### days_since_begin_of_year/0
->days_since_begin_of_year() -> integer() 
+>days_since_begin_of_year() -> integer()  
 >`returns:` Total days spent since the beginning of the year as integer().  
 >_Provides total days spent since the begining of the year for current datetime. Current datetime is NOT counted within total days._
 
 ### days_since_begin_of_year/1
->days_since_begin_of_year(DateTime::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer() 
+>days_since_begin_of_year(DateTime::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer()  
 >`returns:` Total days spent since the beginning of the year as integer().  
 >_Provides total days spent since the begining of the year for the given datetime. Current datetime is NOT counted within total days._
 
 ### days_until_end_of_week/0
->days_until_end_of_week() -> integer() 
+>days_until_end_of_week() -> integer()  
 >`returns:` Total days between current datetime and the end of current week as integer.  
 >_Provides total days between current datetime and the end of the current week._
 
 ### days_until_end_of_week/1
->days_until_end_of_week(DateTime::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer() 
+>days_until_end_of_week(DateTime::[calendar:datetime()](http://www.erlang.org/edoc/doc/stdlib/doc/calendar.html#type-datetime)) -\> integer()  
 >`returns:` Total days between given datetime and the end of the given datetime's week as integer.  
 >_Provides total days between given datetime and the end of the given datetime's week._
 
 ### days_until_end_of_year/0
->days_until_end_of_year() -> integer() 
+>days_until_end_of_year() -> integer()  
 >`returns:` Total days between current datetime and the end of the current datetime's year as integer.  
 >_Provides total days between current datetime and the end of the current datetime's year._
 

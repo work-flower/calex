@@ -362,13 +362,15 @@ days_between(DateTimeFrom, DateTimeTo) ->
 % @returns Total days between given datetime and current datetime as integer.
 -spec days_until_now(calendar:datetime()) -> integer().
 days_until_now(DateTimeFrom) ->
-	days_between(DateTimeFrom, calendar:local_time()).
+	{Date, _} = DateTimeFrom,
+	days_between({Date, {0,0,0}}, calendar:local_time()).
 
 % @doc Provides total difference in days between current datetime and given datetime. Given datetime's day is NOT counted within total days.
 % @returns Total days between current datetime and given datetime as integer.
 -spec days_from_now(calendar:datetime()) -> integer().
 days_from_now(DateTimeTo) ->
-	days_between(calendar:local_time(), DateTimeTo).
+	{Date, _} = DateTimeTo,
+	days_between(calendar:local_time(), {Date, {0,0,0}}).
 
 % @doc Provides total seconds from given datetime and the end of given datetime's day.
 % @returns Total seconds until the end of the given datetime as integer
@@ -581,15 +583,16 @@ dayname_of_the_week(DayNumber, []) ->
 % @returns Formatted datetime string as state in string formatters.
 -spec format(string(), calendar:datetime()) -> string().
 format(Format, DateTime) ->
-	{match, Listed} = re:run(Format, "(\%[a-zA-Z\+])([0-9]*)", [global, {capture, all, list}]),
+	{match, Listed} = re:run(Format, "(%[a-zA-Z\\+])([0-9]*)", [global, {capture, all, list}]),
 	RegexTokens = [NamedHead || [_, NamedHead, _] <- Listed], %ignore any arity for now
 	SetRegexTokens = sets:from_list(RegexTokens),
 	UniqueRegexTokens = sets:to_list(SetRegexTokens),
 	format_internal(Format, UniqueRegexTokens, DateTime).
 
 format_internal(Format, [H | T], DateTime) ->
-	DatePartValue = datepart(list_to_atom(H), DateTime),
-	Replaced = characters_to_list(re:replace(Format, H, DatePartValue)),
+	H1 = (if H =:= "%+" -> "%\\+"; true -> H end), %there is an issue with this special character so it's set like this, appreciate any help
+	DatePartValue = datepart(list_to_atom(H1), DateTime),
+	Replaced = characters_to_list(re:replace(Format, H1, DatePartValue, [global, {return,  list}])),
 	format_internal(Replaced, T, DateTime);
 format_internal(Format, [], _) ->
 	Format.
@@ -683,12 +686,11 @@ datepart('%R', DateTime) ->
 	format("%H:%M", DateTime);
 datepart('%T', DateTime) ->
 	format("%H:%M:%S", DateTime);
+datepart('%\\+', DateTime) ->
+	format("%a %b %e %H:%M:%S %Z %Y", DateTime);
 datepart('%Z', DateTime) ->
 	[UtcDateTime] = calendar:local_time_to_universal_time_dst(DateTime),
-	SecondsDiff = seconds_between(UtcDateTime, DateTime),
-	DateTime,
-	atom_to_list(still_implementing);
-datepart('%+', DateTime) ->
-	format("%a %b %e %H:%M:%S %Z %Y", DateTime);
+	{_, {HDiff, MDiff, SDiff}} = calendar:time_difference(UtcDateTime, DateTime),
+	(if HDiff >= 0 -> "+"; true -> "-" end) ++ pad(integer_to_list(HDiff), 2, leading, "0") ++ ":" ++ pad(integer_to_list(MDiff), 2, leading, "0") ++ ":" ++ pad(integer_to_list(SDiff), 2, leading, "0");
 datepart(AnyOther, _) ->
 	atom_to_list(AnyOther) ++ " not_yet_implemented".

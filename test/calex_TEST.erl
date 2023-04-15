@@ -123,8 +123,8 @@ test_individual(DateTime, All) ->
 	assertEqual(format("%r", DateTime), "06:31:01 PM", 'format %r') ++ 
 	assertEqual(format("%R", DateTime), "18:31", 'format %R') ++ 
 	assertEqual(format("%T", DateTime), "18:31:01", 'format %T') ++ 
-	assertEqual(format("%Z", DateTime), under_construction, 'format %Z') ++ 
-	assertEqual(format("%+", DateTime), "Thu Feb 23 18:31:01 -5:00:00 2023", 'format %+') ++ 
+	assertEqual(format("%Z", DateTime), "+00:00:00", 'format %Z') ++ 
+	assertEqual(format("%+", DateTime), "Thu Feb 23 18:31:01 +00:00:00 2023", 'format %+') ++ 
 	assertEqual(tomorrow(DateTime), {2023,02,24}, tomorrow) ++
         assertEqual(yesterday(DateTime), {2023, 02, 22}, yesterday) ++
 	assertEqual(next_year(DateTime), {{2024, 02, 23}, Time}, next_year) ++
@@ -216,8 +216,8 @@ test_individual(DateTime, All) ->
 	assertEqual(days_since_begin_of_year(DateTime), 53, 'days_since_begin_of_year')++
 	assertEqual(days_until_end_of_year(DateTime), 312, 'days_until_end_of_year')++
 	assertEqual(days_between({{2023,1,1},{0,0,0}}, DateTime), 53, 'days_between')++
-	assertEqual(days_until_now(DateTime), 23, 'days_until_now')++
-	assertEqual(days_from_now({{2023,12,12},{23,59,59}}), 312, 'days_from_now')++
+	assertEqual(days_until_now(DateTime), 51, 'days_until_now always modify target value')++ % NOTE: to test this you need to modify that assert value every time
+	assertEqual(days_from_now(DateTime), -51, 'days_from_now always modify target value')++  % NOTE: to test this you need to modify that assert value every time
 	assertEqual(epoch(), epoch(), epoch)++
 	assertEqual(until_epoch(), until_epoch(), until_epoch)
 ,

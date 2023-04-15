@@ -254,7 +254,7 @@ Function Details
   `%a` - Abbreviated weekday name: Wed  
   `%u` - Day of the week, in range (1..7), Monday is 1: 2  
   `%w` - Day of the week, in range (0..6), Sunday is 0: 0  
-  `%Z` - Timezone as hour and minute offset from UTC: +01:00:00
+  `%Z` - Timezone as hour and minute offset from UTC: +01:00:00  
   `%W` - Week number of the year, in range (0..53), zero-padded, where each week begins on a Monday: 26  
  
   	--- SHORTHAND CONVERSION SPECIFIERS ---  

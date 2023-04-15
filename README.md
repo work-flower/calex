@@ -21,7 +21,7 @@ Ruby inspired calendar extension functions for Calendar module of Erlang. This i
 Function Index
 --------------
 
-|     |     |
+| **Function** | **Description** |
 | --- | --- |
 | [dayname\_of\_the_week/0](#dayname_of_the_week0) | Provides information of the current day in the current week in English. |
 | [dayname\_of\_the_week/1](#dayname_of_the_week1) | Provides information of the day for the given datetime or given day number in English. |

@@ -1,0 +1,14 @@
+{application, calex,
+ [{description, "Ruby inspired calendar extension functions for Calendar module of Erlang."},
+  {vsn, "0.0.2"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["GPL3.0"]},
+  {links, []}
+ ]}.

@@ -2,3 +2,5 @@
 *.beam
 *.dump
 todo.md
+rebar.lock
+_Build
